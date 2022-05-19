@@ -21,7 +21,7 @@ docker 创建并运行HostU
 所有容器进入后需要删除原始路由`route del default`，否则可以直接ping通  
 HostV上增加路由 `route add -net 192.168.48.0/21 gw 192.168.60.1 eth0`  
 
-**可以使用wireshark抓包或者tcpdump在HostV抓包，一定确保数据包能够被转发**
+**如果实验没有效果，可以使用wireshark抓包或者tcpdump在HostV抓包，确定数据包能够被转发（由于未知原因，虚拟机死活不转发，重装了...）**
 
 ### openssl 证书生成  
 
