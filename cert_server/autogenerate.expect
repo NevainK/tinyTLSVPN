@@ -1,0 +1,75 @@
+#!/usr/bin/expect
+
+# at least 4 characters
+
+set CAphrase qwe123
+
+# 0 represent server
+# 1 represent client
+
+set phrase(0) asdf1234
+set phrase(1) 1234qwer
+
+set name(0)   server
+set name(1)   client
+
+# CN CountryName should be 2 letter
+# PN ProvinceName Wubei
+# LN LocalityName WuHan
+# ON OrganName    HUST
+# UN UnitName     CSE
+# YN YourName     zsk
+# EA EmailAddr    myserver@163.com
+# passwd          1234
+# company CompanyName  asd
+
+set CN(0)   	CN
+set PN(0)   	"Hubei Province"
+set LN(0)   	WuHan
+set ON(0)   	HUS
+set UN(0)   	CSE
+set YN(0)   	zsk
+set EA(0)   	myserver@163.com
+set passwd(0)   1234
+set company(0)  server
+
+set CN(1)   	CN
+set PN(1)   	"Hubei Province"
+set LN(1)   	WuHan
+set ON(1)   	HUST
+set UN(1)   	CSE
+set YN(1)   	zsk
+set EA(1)   	myclient@163.com
+set passwd(1)   qwe123
+set company(1)  client
+
+spawn openssl req -new -x509 -keyout ca.key -out ca.crt -config openssl.cnf -subj "/C=$CN(0)/ST=$PN(0)/L=$LN(0)/O=$ON(0)/OU=$UN(0)/CN=$YN(0)/emailAddress=$EA(0)"
+
+expect "PEM pass phrase" {send "$CAphrase\r"}
+expect "PEM pass phrase" {send "$CAphrase\r"}
+
+
+set len [array size name]
+for {set i 0} {$i < $len} {incr i} {
+
+    puts "$i -> $name($i)"
+
+    spawn openssl genrsa -des3 -out "$name($i).key" 1024
+	expect "pass phrase" { send "$phrase($i)\r" }
+	expect "pass phrase" { send "$phrase($i)\r" }
+
+	interact
+
+	spawn openssl req -new -key "$name($i).key" -out "$name($i).csr" -config openssl.cnf -subj "/C=$CN($i)/ST=$PN($i)/L=$LN($i)/O=$ON($i)/OU=$UN($i)/CN=$YN($i)/emailAddress=$EA($i)"
+	expect "pass phrase" { send "$phrase($i)\r" }
+	interact
+
+	spawn openssl ca -in $name($i).csr -out $name($i).crt -cert ca.crt -keyfile ca.key -config openssl.cnf
+	expect "pass phrase" 		  { send "$CAphrase\r" }
+	expect "Sign the certificate" { send "y\r" }
+	expect {
+		"commit?" { send "y\r" }
+		"failed"    
+	}	
+}
+interact
