@@ -4,7 +4,9 @@
 
 ### docker
 
-seedubuntu16.04(32 bit) --VPNServer运行  
+seedubuntu16.04(32 bit)虚拟机 --VPNServer运行  
+`sudo sysctl net.ipv4.ip_forward=1` 开启ip转发  
+`sudo iptables -F`      关闭防火墙  
 
 docker 创建网络extranet  
 `sudo docker network create --subnet=10.0.2.0/24 --gateway=10.0.2.8 --opt "com.docker.network.bridge.name"="docker1" extranet`  
@@ -18,6 +20,8 @@ docker 创建并运行HostU
 如果测试多客户端连接，可以创建更多客户端容器  
 所有容器进入后需要删除原始路由`route del default`，否则可以直接ping通  
 HostV上增加路由 `route add -net 192.168.48.0/21 gw 192.168.60.1 eth0`  
+
+**可以使用wireshark抓包或者tcpdump在HostV抓包，一定确保数据包能够被转发**
 
 ### openssl 证书生成  
 
