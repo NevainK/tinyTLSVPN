@@ -82,9 +82,10 @@ srds  待实现功能
 `cd ..`  
 修改passwd中的内容为autogenerate.expect中的server的phrase  
 修改Makefile中的 TARGETDOCKERHOST 参数(确保copy到docker中)  
-`make run` 或者 `make` 自行copy到容器，./start.sh运行  
+`make run` 或者 `make` 自行copy到容器，./start.sh运行server  
 
-容器中同样推荐编写脚本以重定向方式输入phrase(守护进程手动输入不太友好  
+容器中同样推荐编写脚本以重定向方式输入phrase(守护进程手动输入不太友好
+client端接受一个命令行参数目的主机ip(即server所在主机)
 连接完成可以使用ping 或 telnet (HostV需开启服务)  
 kill掉某个容器中的进程，测试服务器稳定性
 
