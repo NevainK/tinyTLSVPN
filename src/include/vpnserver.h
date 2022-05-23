@@ -56,7 +56,7 @@ private:
 
 vpnserver::vpnserver() : fdipTable(10004, 0), eper(new epoller), pool(new threadpool(8)), ipGenerator(new TunnelIPGenerator)
 {
-	initalizeSSL(SERVERCERT, SERVERKEY, true);
+	initializeSSL(SERVERCERT, SERVERKEY, true);
 	// ssl = generateSSL();
 	// assert(ssl != nullptr);
 	createTUNDevice();
@@ -209,14 +209,25 @@ void vpnserver::setupConnection()
 	assert(x > 0);
 
 	x = SSL_accept(ssl);
-	assert(x > 0);
+	// assert(x > 0);
+	// CHK_SSL(x);
+	if (x < 0) {
+		printf("\033[1;31mACCEPT ERROR : maybe verification failed\n");
+		ERR_print_errors_fp(stderr);
+		puts("\033[0mclose cfd");
+		SSL_shutdown(ssl);
+		SSL_free(ssl);
+		close(cfd);
+		return;
+	}
 
 	ipaddr = ipGenerator->getIPfromPool();
+
 	if (ipaddr == 0) {
 		SSL_shutdown(ssl);
 		SSL_free(ssl);
 		close(cfd);
-		printf("ipaddrs are all distributed\n");
+		printf("\033[31mipaddrs are all distributed\n");
 		return;
 	}
 

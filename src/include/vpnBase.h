@@ -67,7 +67,7 @@ public:
 
 	// vpnBase() = delete;
 
-	void initalizeSSL(const char* certificatefile, const char* privatekeyfile, bool isServer);
+	void initializeSSL(const char* certificatefile, const char* privatekeyfile, bool isServer);
 	virtual SSL* generateSSL(const char* hostname) = 0;
 	void createTUNDevice();
 	void setupTUNIPaddr(const char* fixedip, const int maskbit = defaultmask);
@@ -86,7 +86,7 @@ private:
 	std::string tunname;
 };
 
-void vpnBase::initalizeSSL(const char* certificatefile, const char* privatekeyfile, bool isServer)
+void vpnBase::initializeSSL(const char* certificatefile, const char* privatekeyfile, bool isServer)
 {
 	// SSL library initialization
 	SSL_library_init();
@@ -102,11 +102,11 @@ void vpnBase::initalizeSSL(const char* certificatefile, const char* privatekeyfi
 	ctx = SSL_CTX_new(meth);
 	//  SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
 	SSL_CTX_load_verify_locations(ctx, CACERT, NULL);
-	if (isServer) {
-		SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);
-	}
+	// if (isServer) {
+	// 	SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);
+	// }
 
-	SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);
+	SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, verify_callback);
 
 	// Set up the server certificate
 	if (SSL_CTX_use_certificate_file(ctx, certificatefile, SSL_FILETYPE_PEM) <= 0) {

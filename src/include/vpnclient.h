@@ -47,7 +47,7 @@ vpnclient::vpnclient(const char* hostipstr) : sockfd(0), ssl(nullptr), hostip(ho
 	assert((val1 < 255 && val1 > 0) && (val2 <= 255 && val2 >= 0)
 	       && (val3 <= 255 && val3 >= 0) && (val4 <= 255 && val4 > 0));
 
-	initalizeSSL(CLIENTCERT, CLIENTKEY, false);
+	initializeSSL(CLIENTCERT, CLIENTKEY, false);
 	ssl = generateSSL(hostip.c_str());
 	assert(ssl != nullptr);
 	createTUNDevice();

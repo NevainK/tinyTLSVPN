@@ -22,6 +22,7 @@ set name(1)   client
 # EA EmailAddr    myserver@163.com
 # passwd          1234
 # company CompanyName  asd
+# days expire time unit(day and must > 0)
 
 set CN(0)   	CN
 set PN(0)   	"Hubei Province"
@@ -32,6 +33,7 @@ set YN(0)   	zsk
 set EA(0)   	myserver@163.com
 set passwd(0)   1234
 set company(0)  server
+set days(0)     365
 
 set CN(1)   	CN
 set PN(1)   	"Hubei Province"
@@ -42,6 +44,7 @@ set YN(1)   	zsk
 set EA(1)   	myclient@163.com
 set passwd(1)   qwe123
 set company(1)  client
+set days(1)     1 
 
 spawn openssl req -new -x509 -keyout ca.key -out ca.crt -config openssl.cnf -subj "/C=$CN(0)/ST=$PN(0)/L=$LN(0)/O=$ON(0)/OU=$UN(0)/CN=$YN(0)/emailAddress=$EA(0)"
 
@@ -64,7 +67,7 @@ for {set i 0} {$i < $len} {incr i} {
 	expect "pass phrase" { send "$phrase($i)\r" }
 	interact
 
-	spawn openssl ca -in $name($i).csr -out $name($i).crt -cert ca.crt -keyfile ca.key -config openssl.cnf
+	spawn openssl ca -in $name($i).csr -out $name($i).crt -cert ca.crt -keyfile ca.key -days $days($i) -config openssl.cnf
 	expect "pass phrase" 		  { send "$CAphrase\r" }
 	expect "Sign the certificate" { send "y\r" }
 	expect {
